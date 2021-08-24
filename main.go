@@ -11,6 +11,10 @@ type person struct {
 	money float64
 }
 
+func (p person) say() string {
+	return "Hey, " + p.name
+}
+
 func main() {
 	fmt.Println("vim-go")
 	var x string = "Helloworld"
@@ -32,4 +36,7 @@ func main() {
 		money: 3.0,
 	}
 	fmt.Println(mac)
+
+	fmt.Println(gatuk.say())
+	fmt.Println(mac.say())
 }
