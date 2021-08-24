@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/gatukgl/dog-go/fizzbuzz"
 )
@@ -39,4 +41,18 @@ func main() {
 
 	fmt.Println(gatuk.say())
 	fmt.Println(mac.say())
+
+	const url string = "https://dog.ceo/api/breeds/image/random"
+	resp, err := http.Get(url)
+	if err != nil {
+		// handle error
+		fmt.Println("Get error")
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Read error")
+	}
+	fmt.Printf("%s", body)
 }
