@@ -26,6 +26,10 @@ func (s some) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello Dog Go!")
 }
 
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello Dog Go! from indexHandler")
+}
+
 func main() {
 	fmt.Println("vim-go")
 	var x string = "Helloworld"
@@ -65,7 +69,8 @@ func main() {
 	}
 	fmt.Printf("%s", body)
 
-	var s some
-	http.Handle("/", s)
+	// var s some
+	// http.Handle("/", s)
+	http.HandleFunc("/", indexHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
