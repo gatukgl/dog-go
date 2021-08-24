@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gatukgl/dog-go/fizzbuzz"
+	"github.com/gorilla/mux"
 )
 
 type person struct {
@@ -71,6 +72,11 @@ func main() {
 
 	// var s some
 	// http.Handle("/", s)
-	http.HandleFunc("/", indexHandler)
+	// http.HandleFunc("/", indexHandler)
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", indexHandler)
+	http.Handle("/", r)
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
