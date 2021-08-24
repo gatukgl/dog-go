@@ -1,8 +1,8 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 
@@ -31,6 +31,41 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello Dog Go! from indexHandler")
 }
 
+type Breed struct {
+	Message string `json: "message"`
+	Status  string `json: "statuS"`
+}
+
+func commonMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	})
+}
+
+func breedHandler(w http.ResponseWriter, r *http.Request) {
+	const url string = "https://dog.ceo/api/breeds/image/random"
+	resp, err := http.Get(url)
+	if err != nil {
+		// handle error
+		fmt.Println("Get error")
+	}
+	defer resp.Body.Close()
+
+	// body, err := io.ReadAll(resp.Body)
+	// if err != nil {
+	// 	fmt.Println("Read error")
+	// }
+
+	var b Breed
+	if err := json.NewDecoder(resp.Body).Decode(&b); err != nil {
+		log.Fatal("Failed!")
+	}
+	fmt.Println(b.Message)
+	fmt.Println(b.Status)
+	json.NewEncoder(w).Encode(b)
+}
+
 func main() {
 	fmt.Println("vim-go")
 	var x string = "Helloworld"
@@ -56,26 +91,14 @@ func main() {
 	fmt.Println(gatuk.say())
 	fmt.Println(mac.say())
 
-	const url string = "https://dog.ceo/api/breeds/image/random"
-	resp, err := http.Get(url)
-	if err != nil {
-		// handle error
-		fmt.Println("Get error")
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Read error")
-	}
-	fmt.Printf("%s", body)
-
 	// var s some
 	// http.Handle("/", s)
 	// http.HandleFunc("/", indexHandler)
 
 	r := mux.NewRouter()
+	r.Use(commonMiddleware)
 	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/breed", breedHandler)
 	http.Handle("/", r)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
